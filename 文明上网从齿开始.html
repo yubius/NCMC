@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>文明上网 从“齿”开始 · 网络文明体检</title>
+<link rel="icon" href="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/FFwnbxaOyo3GSuxTMqOcp853nSe">
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@600;900&display=swap">
+<style>
+:root{
+  --navy:#123A5C;
+  --navy-2:#1C4E78;
+  --teal:#2FA8A0;
+  --teal-2:#62C8BF;
+  --mint:#E9F6F2;
+  --mint-deep:#CDEAE2;
+  --coral:#FF7A59;
+  --coral-soft:#FFE9E1;
+  --green:#1FA97C;
+  --green-soft:#DFF4EC;
+  --ink:#234054;
+  --muted:#6B7C8A;
+  --paper:#ffffff;
+  --line:#E3EFEB;
+  --shadow:0 14px 34px -18px rgba(18,58,92,.35);
+  --shadow-sm:0 8px 20px -12px rgba(18,58,92,.28);
+  --radius:22px;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%}
+body{
+  font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  color:var(--ink);
+  background:#f2faf8;
+  line-height:1.55;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior-y:none;
+}
+button{font-family:inherit;border:none;background:none;cursor:pointer;color:inherit}
+input{font-family:inherit}
+.hidden{display:none !important}
+
+/* ===== 舞台：单屏滑动容器 ===== */
+#stage{position:fixed;inset:0;overflow:hidden;background:var(--mint)}
+.view{
+  position:absolute;inset:0;overflow-y:auto;
+  display:flex;flex-direction:column;
+  padding:max(20px,env(safe-area-inset-top)) 22px max(28px,env(safe-area-inset-bottom));
+  opacity:0;transform:translateX(24px);pointer-events:none;
+  -webkit-overflow-scrolling:touch;
+}
+.view.active{opacity:1;transform:none;pointer-events:auto;animation:viewIn .4s ease}
+.view.active.back{animation-name:viewInBack}
+@keyframes viewIn{from{opacity:0;transform:translateX(26px)}to{opacity:1;transform:none}}
+@keyframes viewInBack{from{opacity:0;transform:translateX(-26px)}to{opacity:1;transform:none}}
+
+/* ===== 顶部条 ===== */
+.topbar{display:flex;align-items:center;gap:12px;margin-bottom:18px;flex:none}
+.topbar .back{width:36px;height:36px;border-radius:12px;background:#fff;display:grid;place-items:center;box-shadow:var(--shadow-sm);color:var(--navy)}
+.topbar .brand{font-size:13px;font-weight:700;color:var(--navy);letter-spacing:.5px}
+.topbar .brand span{color:var(--teal)}
+
+/* ===== 视图1：封面 ===== */
+#cover{justify-content:center;text-align:center;align-items:center;background:
+  radial-gradient(120% 90% at 50% -10%, var(--mint-deep) 0%, var(--mint) 46%, #f2faf8 100%);}
+.cover-glow{position:relative;width:210px;height:210px;margin-bottom:8px;flex:none;display:flex;align-items:center;justify-content:center}
+.cover-glow .halo{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#ffffff66 0%,transparent 62%);animation:breath 3.6s ease-in-out infinite}
+.cover-glow .sticker{width:178px;height:178px;padding:14px;animation:floaty 4s ease-in-out infinite}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+@keyframes breath{0%,100%{transform:scale(.96);opacity:.7}50%{transform:scale(1.08);opacity:1}}
+.badge-tag{display:inline-flex;align-items:center;gap:7px;background:#fff;color:var(--teal);font-size:12.5px;font-weight:700;padding:7px 14px;border-radius:999px;box-shadow:var(--shadow-sm);margin-bottom:18px}
+.badge-tag svg{width:15px;height:15px}
+.cover-title{font-family:"Noto Serif SC",serif;font-weight:900;color:var(--navy);font-size:37px;line-height:1.2;letter-spacing:1px}
+.cover-title em{font-style:normal;color:var(--teal)}
+.cover-sub{margin-top:12px;font-size:15px;color:var(--muted);max-width:300px}
+.cover-desc{margin-top:20px;font-size:13.5px;color:var(--navy);background:#ffffffc9;backdrop-filter:blur(6px);padding:14px 18px;border-radius:16px;border:1px solid var(--line);box-shadow:var(--shadow-sm);max-width:320px}
+.cover-desc b{color:var(--coral)}
+.cover-btn{margin-top:26px;width:100%;max-width:320px;height:62px;flex-shrink:0;border-radius:20px;background:linear-gradient(135deg,var(--teal),var(--teal-2));color:#fff;font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 16px 30px -14px rgba(47,168,160,.65)}
+.cover-btn:active{transform:scale(.97)}
+.cover-foot{margin-top:16px;font-size:11.5px;color:#9ab0be}
+.cover-foot svg{width:12px;height:12px;vertical-align:-2px;margin-right:3px}
+/* 红小牙贴纸 & 校徽 */
+.logo-mini{width:22px;height:22px;border-radius:50%;object-fit:cover;box-shadow:0 2px 6px rgba(0,0,0,.14);flex:none}
+.sticker{display:block;width:180px;height:180px;object-fit:contain;background:#fff;border-radius:44%;padding:16px;box-shadow:var(--shadow);position:relative}
+.sticker.sm{width:124px;height:124px;padding:12px;border-radius:40%}
+.sticker.xs{width:120px;height:120px;padding:12px;border-radius:40%}
+.sc-badge{width:54px;height:54px;border-radius:50%;object-fit:contain;background:#fff;padding:5px;margin:0 auto 8px;display:block;filter:drop-shadow(0 8px 14px rgba(0,0,0,.28))}
+.unit-logo{width:16px;height:16px;border-radius:50%;object-fit:cover;vertical-align:-3px;margin-right:2px}
+
+/* ===== 视图2：理念 ===== */
+.sect-title{font-family:"Noto Serif SC",serif;font-weight:900;color:var(--navy);font-size:25px;line-height:1.3}
+.sect-sub{margin-top:8px;font-size:14px;color:var(--muted)}
+.meta-row{display:flex;align-items:center;gap:10px;margin:16px 0 18px;flex:none}
+.chip{font-size:11.5px;color:var(--teal);background:#fff;border:1px solid var(--mint-deep);padding:5px 11px;border-radius:999px;font-weight:600}
+.chip.coral{color:var(--coral);border-color:#f8cdbe}
+.mascot-illus{display:flex;justify-content:center;width:auto;margin:2px auto 10px;animation:floaty 4s ease-in-out infinite}
+.idea-list{display:flex;flex-direction:column;gap:10px;margin:6px 0 8px}
+.idea{display:flex;gap:13px;background:#fff;border-radius:18px;padding:12px 15px;box-shadow:var(--shadow-sm);border:1px solid var(--line)}
+.idea .ic{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;flex:none;color:#fff}
+.idea .ic svg{width:22px;height:22px}
+.idea h4{font-size:15px;font-weight:700;color:var(--navy)}
+.idea p{font-size:13px;color:var(--muted);margin-top:3px}
+.idea-1 .ic{background:linear-gradient(135deg,var(--teal),var(--teal-2))}
+.idea-2 .ic{background:linear-gradient(135deg,var(--coral),#ff9d7e)}
+.idea-3 .ic{background:linear-gradient(135deg,var(--navy),var(--navy-2))}
+.primary-btn{width:100%;height:62px;flex-shrink:0;border-radius:19px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 14px 26px -12px rgba(18,58,92,.55);margin-top:16px}
+.primary-btn:active{transform:scale(.97)}
+.ghost-btn{width:100%;height:58px;flex-shrink:0;border-radius:18px;background:#fff;color:var(--navy);font-size:15px;font-weight:600;border:1.5px solid var(--line);display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:var(--shadow-sm);margin-top:12px}
+.ghost-btn:active{transform:scale(.97)}
+.flex-grow{flex:1;min-height:8px}
+
+/* ===== 视图3：体检 quiz ===== */
+#quiz{padding-top:0}
+.quiz-head{padding-top:max(20px,env(safe-area-inset-top));background:linear-gradient(160deg,var(--navy) 0%,var(--navy-2) 100%);margin:0 -22px;padding-left:22px;padding-right:22px;padding-bottom:18px;color:#fff;border-radius:0 0 26px 26px;flex:none}
+.quiz-head .qh-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.quiz-head .back2{width:34px;height:34px;border-radius:11px;background:#ffffff22;display:grid;place-items:center;color:#fff}
+.quiz-head .count{font-size:13px;color:#cfe6f4;font-weight:600}
+.prog{height:8px;background:#ffffff26;border-radius:99px;overflow:hidden}
+.prog i{display:block;height:100%;background:linear-gradient(90deg,var(--teal-2),#8fe0d5);border-radius:99px;transition:width .45s ease;width:0}
+.scene-body{flex:1;padding-top:22px}
+.scene-card{background:#fff;border-radius:var(--radius);padding:24px 20px;box-shadow:var(--shadow);border:1px solid var(--line);animation:cardIn .4s ease}
+@keyframes cardIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.scene-label{display:inline-flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--teal);background:var(--mint);padding:6px 12px;border-radius:999px;margin-bottom:14px}
+.scene-label svg{width:14px;height:14px}
+.scene-text{font-size:17px;font-weight:600;color:var(--navy);line-height:1.7}
+.scene-tag{display:flex;gap:6px;margin-top:14px;flex-wrap:wrap}
+.scene-tag span{font-size:11px;color:var(--muted);background:#f3f7f6;padding:4px 9px;border-radius:8px}
+.judge{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.judge button{height:62px;flex-shrink:0;border-radius:18px;font-size:16px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:9px;border:2px solid var(--line);color:var(--navy);background:#fff;transition:all .18s}
+.judge button svg{width:20px;height:20px}
+.judge .ok{border-color:#bfe8d8;color:var(--green)}
+.judge .no{border-color:#ffd0c2;color:var(--coral)}
+.judge button:active{transform:scale(.97)}
+.feedback{margin-top:16px;border-radius:18px;padding:16px;display:none;animation:cardIn .35s ease}
+.feedback.right{background:var(--green-soft);border:1px solid #bfe8d8;display:block}
+.feedback.wrong{background:var(--coral-soft);border:1px solid #ffcfc0;display:block}
+.fb-head{display:flex;align-items:center;gap:8px;font-weight:800;font-size:15px;margin-bottom:6px}
+.fb-head svg{width:19px;height:19px}
+.feedback.right .fb-head{color:var(--green)}
+.feedback.wrong .fb-head{color:var(--coral)}
+.fb-meta{font-size:13px;color:var(--muted);font-weight:600;margin-bottom:6px}
+.fb-meta b{color:var(--ink)}
+.fb-text{font-size:13.5px;color:var(--ink)}
+.next-btn{width:100%;height:62px;flex-shrink:0;border-radius:18px;background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;font-size:16px;font-weight:700;margin-top:16px;display:none}
+.next-btn.show{display:flex;align-items:center;justify-content:center;gap:8px}
+.next-btn:active{transform:scale(.97)}
+
+/* ===== 视图4：结果 ===== */
+.result-hero{text-align:center;margin:10px 0 18px}
+.badge-ring{position:relative;width:170px;height:170px;margin:0 auto 14px}
+.badge-ring .r-glow{position:absolute;inset:0;border-radius:50%;background:radial-gradient(circle,#fff 0%,transparent 70%)}
+.badge-ring svg{position:relative;width:100%;height:100%;transform:rotate(-90deg)}
+.badge-ring .center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px}
+.badge-ring .center .n{font-size:46px;font-weight:900;color:var(--navy);line-height:1}
+.badge-ring .center .lbl{font-size:12px;color:var(--muted);font-weight:600}
+.badge-name{font-family:"Noto Serif SC",serif;font-weight:900;font-size:27px;color:var(--navy)}
+.badge-sub{font-size:14px;color:var(--muted);margin-top:8px;max-width:300px;margin-left:auto;margin-right:auto}
+.badge-desc{margin-top:16px;background:#fff;border-radius:18px;padding:16px;box-shadow:var(--shadow-sm);border:1px solid var(--line);font-size:14px;color:var(--ink);text-align:left}
+.badge-desc b{color:var(--teal)}
+.breakdown{margin-top:18px}
+.bd-title{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.bd-title svg{width:18px;height:18px;color:var(--teal)}
+.bd-item{display:flex;gap:12px;align-items:flex-start;background:#fff;border-radius:14px;padding:12px 14px;margin-bottom:9px;box-shadow:var(--shadow-sm);border:1px solid var(--line)}
+.bd-item .mark{width:26px;height:26px;border-radius:9px;display:grid;place-items:center;flex:none;margin-top:1px}
+.bd-item .mark svg{width:15px;height:15px}
+.bd-item.good .mark{background:var(--green-soft);color:var(--green)}
+.bd-item.bad .mark{background:var(--coral-soft);color:var(--coral)}
+.bd-item .t{font-size:13.5px;color:var(--ink);line-height:1.5}
+.bd-item .t small{display:block;color:var(--muted);font-size:11.5px;margin-top:2px}
+
+/* ===== 视图5：宣言 ===== */
+.pledge-card{background:linear-gradient(165deg,#ffffff 0%,#f0faf7 100%);border-radius:var(--radius);border:1px solid var(--line);box-shadow:var(--shadow);overflow:hidden;margin-top:14px;flex:none}
+.pledge-head{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;padding:13px 18px;display:flex;align-items:center;gap:12px}
+.pledge-head svg{width:24px;height:24px;color:var(--teal-2)}
+.pledge-head h3{font-size:16px;font-weight:800}
+.pledge-head p{font-size:11.5px;color:#cfe6f4;margin-top:1px}
+.pledge-body{padding:14px 18px 16px}
+.pledge-line{display:flex;gap:9px;align-items:flex-start;margin-bottom:8px}
+.pledge-line .dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex:none;margin-top:6px;box-shadow:0 0 0 4px var(--mint-deep)}
+.pledge-line p{font-size:13px;color:var(--ink);line-height:1.55}
+.name-field{margin-top:13px}
+.name-field input{width:100%;height:48px;border-radius:14px;border:1.5px solid var(--line);padding:0 15px;font-size:16px;color:var(--navy);background:#fff;outline:none;transition:border .2s}
+.name-field input:focus{border-color:var(--teal)}
+.name-field input::placeholder{color:#b6c6cf}
+.pledge-note{font-size:11px;color:var(--muted);margin-top:8px;display:flex;align-items:center;gap:6px}
+.pledge-note svg{width:12px;height:12px;color:var(--teal)}
+
+/* ===== 视图6：宣言卡 ===== */
+.share-card{margin:10px 0 18px;border-radius:24px;overflow:hidden;box-shadow:var(--shadow);border:1px solid var(--line);flex:none}
+.sc-top{background:linear-gradient(135deg,var(--navy),var(--navy-2));color:#fff;padding:14px 18px 20px;text-align:center;position:relative}
+.sc-top::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:20px;background:linear-gradient(135deg,transparent 49%,#fff 50%,#fff 100%)}
+.sc-top h3{font-family:"Noto Serif SC",serif;font-weight:900;font-size:18px;letter-spacing:1px}
+.sc-top p{font-size:11.5px;color:#cfe6f4;margin-top:3px;letter-spacing:.5px}
+.sc-body{background:#fff;padding:13px 18px 15px}
+.sc-quote{font-size:13px;color:var(--ink);line-height:1.72;font-weight:500}
+.sc-quote b{color:var(--teal)}
+.sc-name{text-align:center;margin-top:14px;font-size:16px;color:var(--navy);font-weight:800;display:flex;align-items:center;justify-content:center;gap:8px}
+.sc-name em{font-style:normal;color:var(--teal);letter-spacing:1px}
+.sc-name-label{color:#ff8c8c;font-size:13px;font-weight:700;background:#fff1f1;padding:3px 9px;border-radius:999px}
+.sc-meta{display:flex;justify-content:space-between;align-items:center;margin-top:11px;padding-top:9px;border-top:1.5px dashed var(--line);font-size:11.5px;color:var(--muted)}
+.sc-meta .unit{display:flex;align-items:center;gap:6px;font-weight:600}
+.sc-meta .unit svg{width:14px;height:14px;color:var(--teal)}
+.share-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.copy-btn{height:58px;flex-shrink:0;border-radius:17px;background:linear-gradient(135deg,var(--teal),var(--teal-2));color:#fff;font-size:14.5px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 12px 24px -10px rgba(47,168,160,.6)}
+.copy-btn:active{transform:scale(.97)}
+.copy-btn svg,.ghost-btn svg{width:17px;height:17px}
+.screenshot-hint{display:flex;align-items:center;gap:8px;justify-content:center;font-size:11.5px;color:var(--muted);margin-top:4px}
+.screenshot-hint svg{width:14px;height:14px;color:var(--teal)}
+
+/* ===== Toast ===== */
+#toast{position:fixed;left:50%;bottom:40px;transform:translate(-50%,20px);background:var(--navy);color:#fff;font-size:14px;font-weight:600;padding:12px 20px;border-radius:13px;box-shadow:var(--shadow);opacity:0;pointer-events:none;transition:all .3s ease;z-index:99;max-width:80%;text-align:center}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+/* ===== 保存大图预览遮罩（手机长按保存到相册的兜底方案） ===== */
+#saveOverlay{position:fixed;inset:0;background:#ffffff;z-index:97;display:flex;flex-direction:column;padding:max(18px,env(safe-area-inset-top)) 20px max(20px,env(safe-area-inset-bottom));overflow:auto}
+#saveOverlay.hidden{display:none !important}
+.ov-head{width:100%;display:flex;justify-content:space-between;align-items:center;color:#123a5c;font-weight:800;font-size:16px;margin-bottom:12px;flex:none}
+#ovClose{background:#eef4f6;color:#1c4a63;font-size:14px;font-weight:700;padding:9px 18px;border-radius:11px}
+.ov-imgwrap{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:0}
+#ovImg{max-width:100%;max-height:72vh;border-radius:14px;box-shadow:0 12px 34px rgba(16,43,63,.18);-webkit-user-select:all;user-select:all;-webkit-touch-callout:default}
+.ov-hint{margin-top:14px;color:#0f766e;font-size:14px;font-weight:700;text-align:center;line-height:1.6}
+.ov-hint small{display:block;color:#5b7a8d;font-size:12px;font-weight:500}
+.ov-actions{width:100%;margin-top:14px;flex:none}
+#ovDownload{width:100%;height:56px;flex-shrink:0;border-radius:16px;background:linear-gradient(135deg,var(--teal),var(--teal-2));color:#fff;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 12px 24px -10px rgba(47,168,160,.6)}
+#ovDownload:active{transform:scale(.98)}
+
+/* ===== 声明页脚 ===== */
+.view-foot{margin-top:20px;text-align:center;font-size:11px;color:#9ab0be;flex:none}
+</style>
+</head>
+<body>
+
+<div id="stage">
+
+  <!-- ===== 视图1 封面 ===== -->
+  <section class="view active" id="cover">
+    <div class="cover-glow">
+      <div class="halo"></div>
+      <img class="sticker" src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/JuhHbXU18oReyvx7uoZcidxdnbd" alt="红小牙·网络文明卫士">
+    </div>
+    <div class="badge-tag">
+      <img class="logo-mini" src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/O6AubYbCsoerNqxuVKzcVROTnrd" alt="南昌医学院校徽">
+      南昌医学院 · 网络文化作品
+    </div>
+    <h1 class="cover-title">文明上网<br><em>从“齿”开始</em></h1>
+    <p class="cover-sub">网络空间也要“每日清洁”<br>来做一次网络文明体检，测测你的“网络口腔”健康指数</p>
+    <div class="cover-desc">不文明上网就像<b>牙菌斑</b>——看似小事，日积月累会<b>蛀掉</b>清朗网络空间。</div>
+    <button class="cover-btn" data-go="intro">
+      开始网络文明体检
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <p class="cover-foot">校园网络文明月 · 一起守护清朗空间</p>
+  </section>
+
+  <!-- ===== 视图2 理念 ===== -->
+  <section class="view" id="intro">
+    <div class="topbar">
+      <button class="back" data-go="cover" aria-label="返回"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="brand">文明上网 · 从“齿”开始</div>
+    </div>
+    <h2 class="sect-title">网络文明，<br>为什么“从齿开始”？</h2>
+    <p class="sect-sub">像爱护牙齿一样，每天清洁自己的网络言行。</p>
+    <div class="meta-row">
+      <span class="chip">10 个情景</span>
+      <span class="chip">2 分钟</span>
+      <span class="chip coral">请如实判断</span>
+    </div>
+    <div class="mascot-illus">
+      <img class="sticker sm" src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/Bu0wbvmKgo9L9lxNK5Ic3UpUnhf" alt="红小牙·拒绝网络不文明">
+    </div>
+    <div class="idea-list">
+      <div class="idea idea-1">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 7l2-2 2 2M4 7l6-4M8 17l-2 2-2-2 2-4 2 4zM16 7l2-2 2 2M16 7l6-4M20 17l-2 2-2-2 2-4 2 4z"/></svg></div>
+        <div><h4>网络空间要“每日清洁”</h4><p>像刷牙一样，理性表达、核实转发，天天呵护。</p></div>
+      </div>
+      <div class="idea idea-2">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg></div>
+        <div><h4>不文明行为 = 网络“菌斑”</h4><p>传谣、网暴、晒隐私……看似小事，实则侵蚀清朗。</p></div>
+      </div>
+      <div class="idea idea-3">
+        <div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12a8 8 0 1 1-4-7M12 8v4l3 2M20 4l1 3-3 1"/></svg></div>
+        <div><h4>一起当网络“清朗卫士”</h4><p>不传谣、不网暴、不晒他人隐私，主动守护。</p></div>
+      </div>
+    </div>
+    <div class="flex-grow"></div>
+    <button class="primary-btn" id="startQuiz">开始体检 · 随机 10 题
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+    </button>
+    <div class="view-foot">口腔医学院网络文化作品征集大赛</div>
+  </section>
+
+  <!-- ===== 视图3 体检 ===== -->
+  <section class="view" id="quiz">
+    <div class="quiz-head">
+      <div class="qh-top">
+        <button class="back2" data-quiz-quit aria-label="退出体检"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+        <div class="count" id="qCount">1 / 6</div>
+      </div>
+      <div class="prog"><i id="qProg"></i></div>
+    </div>
+    <div class="scene-body" id="sceneBody"></div>
+  </section>
+
+  <!-- ===== 视图4 结果 ===== -->
+  <section class="view" id="result"></section>
+
+  <!-- ===== 视图5 宣言 ===== -->
+  <section class="view" id="pledge">
+    <div class="topbar">
+      <button class="back" data-go="result" aria-label="返回"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="brand">签署 · 文明上网宣言</div>
+    </div>
+    <div class="mascot-illus">
+      <img class="sticker xs" src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/DwR7bS6SpoCeRPxl3UXcp1E5nRh" alt="红小牙·文明承诺">
+    </div>
+    <h2 class="sect-title" style="text-align:center;font-size:22px">我的网络文明宣言</h2>
+    <p class="sect-sub" style="text-align:center">像爱护牙齿一样，守护清朗网络空间</p>
+    <div class="pledge-card">
+      <div class="pledge-head">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V5z"/><path d="M8 12l3 3 5-6"/></svg>
+        <div><h3>清朗空间 · 我承诺</h3><p>口腔医学院 网络文明行动</p></div>
+      </div>
+      <div class="pledge-body">
+        <div class="pledge-line"><span class="dot"></span><p>不传谣、不信谣，看到未经核实的信息不随意转发。</p></div>
+        <div class="pledge-line"><span class="dot"></span><p>不网暴、不辱骂，就事论事，理性表达不同观点。</p></div>
+        <div class="pledge-line"><span class="dot"></span><p>不晒他人隐私，尊重每一个人的尊严与边界。</p></div>
+        <div class="pledge-line"><span class="dot"></span><p>主动举报不良信息，做网络空间的清朗卫士。</p></div>
+        <div class="name-field">
+          <input type="text" id="pledgeName" maxlength="12" placeholder="请输入你的名字（可选）">
+        </div>
+        <button class="primary-btn" id="makeCard" style="height:58px;margin-top:12px;border-radius:17px;font-size:15.5px">生成我的宣言卡</button>
+        <div class="pledge-note">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+          名字可留空，将显示为“网络文明践行者”
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== 视图6 宣言卡 ===== -->
+  <section class="view" id="card">
+    <div class="topbar">
+      <button class="back" data-go="pledge" aria-label="返回"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <div class="brand">我的文明宣言卡</div>
+    </div>
+    <div class="share-card" id="shareCard">
+      <div class="sc-top">
+        <img class="sc-badge" crossorigin="anonymous" src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/FFwnbxaOyo3GSuxTMqOcp853nSe" alt="红小牙·点赞">
+        <h3>网络文明 · 清朗卫士</h3>
+        <p>文明上网 从“齿”开始</p>
+      </div>
+      <div class="sc-body">
+        <p class="sc-quote">“我承诺：不传谣、不网暴、不晒他人隐私；理性表达、核实转发、主动举报。像爱护牙齿一样，<b>每天清洁自己的网络言行</b>，守护清朗网络空间。”</p>
+        <div class="sc-name"><span class="sc-name-label">承诺人</span><em id="cardName">网络文明践行者</em></div>
+        <div class="sc-meta">
+          <span class="unit">
+            <img class="unit-logo" crossorigin="anonymous" src="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/O6AubYbCsoerNqxuVKzcVROTnrd" alt="南昌医学院校徽">
+            南昌医学院
+          </span>
+          <span id="cardDate">2026-10</span>
+        </div>
+      </div>
+    </div>
+    <div class="share-actions">
+      <button class="copy-btn" id="copyBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="12" height="12" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        复制宣言文案
+      </button>
+      <button class="copy-btn" id="downloadBtn" style="background:linear-gradient(135deg,var(--navy),var(--navy-2));box-shadow:0 12px 24px -10px rgba(18,58,92,.6)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+        下载保存为图片
+      </button>
+      <button class="ghost-btn" data-go="result">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7M3 4v5h5"/></svg>
+        返回体检结果
+      </button>
+      <button class="ghost-btn" data-go="cover" id="againBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v6h6M20 20v-6h-6M20 9A8 8 0 0 0 5.6 5.6L4 8M4 15a8 8 0 0 0 14.4 3.4L20 16"/></svg>
+        重新体检
+      </button>
+    </div>
+    <div class="screenshot-hint">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 3h12a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z"/><path d="M9 7h6"/></svg>
+      截图保存卡片，即可分享到朋友圈 / 班级群
+    </div>
+  </section>
+
+</div>
+
+<div id="saveOverlay" class="hidden">
+  <div class="ov-head">
+    <span>卡片图片已生成</span>
+    <button id="ovClose">关闭</button>
+  </div>
+  <div class="ov-imgwrap">
+    <img id="ovImg" alt="我的文明宣言卡">
+    <p class="ov-hint">长按上方图片 → 点击「保存图片」即可存入相册
+      <small>长按保存对所有手机都有效（豆包 / 微信 / 浏览器通用）</small>
+    </p>
+  </div>
+  <div class="ov-actions">
+    <button id="ovDownload">
+      <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v12M8 11l4 4 4-4M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+      下载图片
+    </button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+(function(){
+  "use strict";
+  // ===== 数据 =====
+  var ALL_SCENES=[
+    {t:"小张看到一条“某品牌牙膏含致癌物”的传言，没核实来源就转到班级群。",tag:["网络谣言"],ok:0,meta:"正确做法：不传谣",fb:"谣言像“网络牙菌斑”——不查证就扩散，越传越大，最终侵蚀的是整个清朗空间。"},
+    {t:"小李在评论区反对一个观点，但就事论事、不带脏字、不攻击任何人。",tag:["理性表达"],ok:1,meta:"正确做法：就事论事",fb:"理性表达就像“正确刷牙”——既守住自己的立场，也不伤及他人，干净又得体。"},
+    {t:"小王把同学一张没打码的私密照发进群里，还配文“太搞笑了”。",tag:["侵犯隐私"],ok:0,meta:"正确做法：尊重隐私",fb:"未经同意晒他人隐私，就像“咬到别人的牙齿”——自己一时痛快，别人却很疼。"},
+    {t:"小赵刷到疑似诈骗链接，第一时间举报，并在群里提醒大家别点。",tag:["主动护网"],ok:1,meta:"正确做法：主动举报",fb:"主动举报就像“洁齿护龈”——既保护了自己，也守护了整片网络口腔的健康。"},
+    {t:"小陈转发健康科普前，先确认了来源和作者，只分享权威平台的正版内容。",tag:["核实转发"],ok:1,meta:"正确做法：核实来源",fb:"核实来源像“挑选正规牙科”——只有可靠的信息，才配被转发，才值得被信任。"},
+    {t:"小周因为观点不合，在评论区用侮辱性词汇攻击别人。",tag:["网络暴力"],ok:0,meta:"正确做法：理性沟通",fb:"语言暴力像“咬伤别人”——图一时之快，既伤了人，也污浊了清朗的网络氛围。"},
+    {t:"小吴明知是谣言，还跟着起哄转发，觉得“大家都转没事”。",tag:["网络谣言"],ok:0,meta:"正确做法：不跟风",fb:"跟风转谣就像“口腔细菌扩散”——你不制止反而助长，让清朗的牙缝越堵越脏。"},
+    {t:"小郑网购遇到问题，在平台评论区理性客观写评价、讲清事实。",tag:["理性维权"],ok:1,meta:"正确做法：客观评价",fb:"客观评价像“温和洁齿”——指出问题不伤人格，既帮商家改进，也让网络更有秩序。"},
+    {t:"小冯把自己的身份证号、家庭住址发到公开论坛求助。",tag:["信息泄露"],ok:0,meta:"正确做法：保护隐私",fb:"随意晒身份证住址，像“把门牙敲掉”——信息裸露在外，骗子捡到就能钻空子。"},
+    {t:"小褚下载盗版软件，还分享到班级群里“大家都能用”。",tag:["盗版侵权"],ok:0,meta:"正确做法：尊重版权",fb:"传播盗版像“咀嚼劣质糖”——图一时方便，却伤了原创者的心血，整个生态跟着蛀。"},
+    {t:"小卫收到陌生链接让输银行卡密码，他转发给好友一起“研究研究”。",tag:["网络诈骗"],ok:0,meta:"正确做法：不点不转",fb:"把陌生链接拉好友一起点，像“把蛀牙传给全桌人”——害自己也害朋友，必须立刻止住。"},
+    {t:"小蒋玩游戏充值前，先确认官方渠道，拒绝低价代充。",tag:["防诈自律"],ok:1,meta:"正确做法：正规充值",fb:"认准官方渠道像“用正规牙科”——避开低价陷阱，护住钱包这张“最贵的牙”。"},
+    {t:"小沈在直播弹幕里跟风刷屏辱骂一个主播。",tag:["网络暴力"],ok:0,meta:"正确做法：不跟风开骂",fb:"跟风刷屏辱骂像“一群人咬人”——你以为只是凑热闹，每一句都真实咬伤别人。"},
+    {t:"小韩看到谣言，主动用权威平台的信息在群里澄清。",tag:["主动辟谣"],ok:1,meta:"正确做法：传播真相",fb:"主动辟谣像“根管治疗”——把谣言这颗烂牙连根拔掉，还大家一口清朗好牙。"},
+    {t:"小曹未经允许，把朋友的照片修图恶搞后发上网。",tag:["侵犯肖像"],ok:0,meta:"正确做法：尊重肖像",fb:"恶搞别人照片发上网，像“往别人嘴里塞口香糖”——你笑得开心，人家浑身难受。"},
+    {t:"小魏遇到网络欺凌，保留证据并告知老师、选择举报。",tag:["保护自己"],ok:1,meta:"正确做法：留存证据",fb:"被欺凌时留证求助，像“牙齿受伤及时看牙医”——越早处理，越不容易留下后患。"},
+    {t:"小尤在贴吧看到有人求人肉搜索某人，他跟着提供线索。",tag:["人肉搜索"],ok:0,meta:"正确做法：拒绝人肉",fb:"人肉搜索像“撬开别人口腔”——满足好奇心，却把他人隐私和尊严啃得精光。"},
+    {t:"小许转发网上的“健康偏方”前，先在正规医学平台查证。",tag:["核实健康"],ok:1,meta:"正确做法：循证查证",fb:"健康信息先查证，像“选正规牙医”——伪科普再诱人，也骗不过权威这层防护罩。"},
+    {t:"小何沉迷刷短视频到凌晨，第二天上课打瞌睡。",tag:["网络沉迷"],ok:0,meta:"正确做法：合理上网",fb:"沉迷刷屏熬夜，像“过度吃糖”——当下快乐，牙齿和精力都在悄悄蛀空。"},
+    {t:"小吕看到同学被造谣，主动私信安慰他，并帮他澄清。",tag:["温暖守护"],ok:1,meta:"正确做法：关爱他人",fb:"陪朋友澄清谣言，像“给牙做热敷”——疼的时候有人管，清朗空间也更有温度。"},
+    {t:"小施把老师的课件上传到公开网站售卖。",tag:["版权侵权"],ok:0,meta:"正确做法：尊重原创",fb:"把他人课件拿去卖，像“偷用别人的假牙”——获利的是你，受损的是原创者的心血。"},
+    {t:"小孔遇到观点分歧，主动私聊沟通，而不是公开对骂。",tag:["理性沟通"],ok:1,meta:"正确做法：私下沟通",fb:"分歧私聊化解，像“用牙线温柔剔牙缝”——不伤表面，却把问题清得干干净净。"},
+    {t:"小严相信“吃糖能防病毒”的网传说法，并到处宣传。",tag:["伪科学"],ok:0,meta:"正确做法：不信谣传",fb:"轻信并传播伪科学，像“把牙膏当饭吃”——听着玄乎，实际害人不浅还蛀思想。"},
+    {t:"小华收到中奖短信要先转“手续费”，他果断拉黑并举报。",tag:["反诈"],ok:1,meta:"正确做法：及时止损",fb:"识破骗局果断拉黑，像“咬碎假牙”——骗子这口坏牙咬不住你，反而被你反制。"},
+    {t:"小邵为了涨粉，剪辑断章取义的视频博眼球。",tag:["断章取义"],ok:0,meta:"正确做法：尊重事实",fb:"断章取义博眼球，像“只拍牙冠不拍牙根”——看着像真的，其实是误导的半颗假牙。"},
+    {t:"小唐看到陌生账号散布谣言，立刻点击举报。",tag:["主动举报"],ok:1,meta:"正确做法：一键举报",fb:"一键举报像“剔掉塞牙的异物”——动作虽小，却让清朗空间不被一粒谣言堵住。"},
+    {t:"小杨网购只从正规平台下单，不点不明链接。",tag:["安全购物"],ok:1,meta:"正确做法：正规渠道",fb:"只在正规平台下单，像“认准可靠牙科”——避开不明链接这口坏牙，钱包稳稳的。"},
+    {t:"小崔在同学群里发布他人的考试成绩和家庭住址。",tag:["侵犯隐私"],ok:0,meta:"正确做法：尊重他人",fb:"把别人成绩住址公之于众，像“撕开别人病历”——每一条都踩在他人尊严的牙神经上。"},
+    {t:"小彭做网络文明宣传，提醒大家不信谣不传谣。",tag:["正向传播"],ok:1,meta:"正确做法：传播文明",fb:"传播网络文明，像“每天好好刷牙”——一人行动很轻，人人坚持，清朗空间就亮了。"},
+    {t:"小蒋看到好友辱骂同学，不仅没制止，还点赞叫好。",tag:["助长暴力"],ok:0,meta:"正确做法：及时制止",fb:"见人开骂还叫好，像“往伤口撒盐又咬一口”——你的一点赞，是给暴力火上浇油。"}
+  ];
+  var SCENES=[];
+  function pickQuiz(){
+    var pool=ALL_SCENES.slice();
+    for(var i=pool.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=pool[i];pool[i]=pool[j];pool[j]=t;}
+    SCENES=pool.slice(0,10);
+  }
+  function startQuiz(){
+    pickQuiz();
+    cur=0; score=0; picked={};
+    renderScene();
+    go('quiz');
+  }
+  var BADGES=[
+    {min:6,name:"清朗卫士",score:"6 / 6",desc:"你的网络口腔健康满分！传谣、网暴、晒隐私统统与你无关。堪称网络文明示范生，请继续保持这份“洁齿”自律。"},
+    {min:4,name:"护网新星",score:"5 / 6",desc:"你的网络口腔很健康，但还有一两颗“菌斑”需要清理。记住：核实转发、理性表达，细节也能守护清朗。"},
+    {min:2,name:"清爽待启",score:"4 / 6",desc:"你的网络言行有点“牙结石”了。别担心，每天都做一点清洁：不传谣、不网暴、不晒隐私，慢慢就会变好。"},
+    {min:0,name:"急需洗牙",score:"3 / 6",desc:"你的网络口腔堆积了不少“菌斑”，急需一次彻底清洁。从今天起，理性表达、核实转发，一起把清朗刷回来！"}
+  ];
+
+  var cur=0, score=0, picked={};
+  var $=function(id){return document.getElementById(id);};
+
+  // ===== 视图切换 =====
+  var views=document.querySelectorAll('.view');
+  var order=['cover','intro','quiz','result','pledge','card'];
+  var currentName='cover';
+  function go(name){
+    views.forEach(function(v){v.classList.remove('active');v.classList.remove('back');});
+    var idx=order.indexOf(name);
+    var curIdx=order.indexOf(currentName);
+    var target=document.getElementById(name);
+    if(curIdx>idx){ target.classList.add('back'); }
+    target.classList.add('active');
+    currentName=name;
+    target.scrollTop=0;
+  }
+
+  // 全局 data-go
+  document.querySelectorAll('[data-go]').forEach(function(b){
+    b.addEventListener('click',function(){go(this.getAttribute('data-go'));});
+  });
+
+  // ===== 体检 =====
+  function renderScene(){
+    if(!SCENES.length){return;}
+    var s=SCENES[cur];
+    var answered=Object.prototype.hasOwnProperty.call(picked,cur);
+    var html=
+      '<div class="scene-card">'+
+        '<span class="scene-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l8 3v6c0 5-3.5 9-8 11-4.5-2-8-6-8-11V6z"/></svg>情景 '+(cur+1)+'</span>'+
+        '<p class="scene-text">'+s.t+'</p>'+
+        '<div class="scene-tag">'+s.tag.map(function(x){return '<span>'+x+'</span>';}).join('')+'</div>'+
+        '<div class="judge" id="judgeBtns">'+
+          '<button class="ok" data-v="1"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l5 5 9-11"/></svg>文明行为</button>'+
+          '<button class="no" data-v="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 6l12 12M18 6L6 18"/></svg>不文明行为</button>'+
+        '</div>'+
+      '</div>';
+    if(answered){
+      var isRight=(picked[cur]===s.ok);
+      html+=
+        '<div class="feedback '+(isRight?'right':'wrong')+'" id="fb">'+
+          '<div class="fb-head">'+(isRight?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M8 12l3 3 6-7"/></svg>判断正确':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg>再看看')+'</div>'+
+          '<div class="fb-meta">'+s.meta+'</div>'+
+          '<div class="fb-text">'+s.fb+'</div>'+
+        '</div>'+
+        '<button class="next-btn show" id="nextBtn">'+(cur===SCENES.length-1?'查看我的健康指数':'下一题')+
+          '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>';
+    }
+    $('sceneBody').innerHTML=html;
+    $('qCount').textContent=(cur+1)+' / '+SCENES.length;
+    $('qProg').style.width=((cur+1)/SCENES.length*100)+'%';
+
+    if(!answered){
+      var jb=$('judgeBtns');
+      jb.querySelectorAll('button').forEach(function(btn){
+        btn.addEventListener('click',function(){
+          picked[cur]=parseInt(btn.getAttribute('data-v'),10);
+          if(btn.getAttribute('data-v')==='1' && SCENES[cur].ok===1){score++;}
+          if(btn.getAttribute('data-v')==='0' && SCENES[cur].ok===0){score++;}
+          renderScene();
+          setTimeout(function(){ var fb=$('fb'); if(fb) fb.scrollIntoView({behavior:'smooth',block:'nearest'}); },120);
+        });
+      });
+    } else {
+      var nb=$('nextBtn');
+      if(nb) nb.addEventListener('click',function(){
+        if(cur<SCENES.length-1){cur++;renderScene();}
+        else{showResult();go('result');}
+      });
+    }
+  }
+
+  // 开始体检（随机抽 6 题）
+  document.getElementById('startQuiz').addEventListener('click',startQuiz);
+
+  // 退出体检
+  document.querySelector('[data-quiz-quit]').addEventListener('click',function(){go('intro');});
+
+  // ===== 结果 =====
+  function showResult(){
+    var badge=BADGES.find(function(b){return score>=b.min;})||BADGES[BADGES.length-1];
+    var pct=Math.round(score/SCENES.length*100);
+    var ring='<svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="#E3EFEB" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="url(#rg)" stroke-width="12" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="'+ (326.7-326.7*pct/100) +'"/><defs><linearGradient id="rg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2FA8A0"/><stop offset="1" stop-color="#62C8BF"/></linearGradient></defs></svg>';
+    var breakdown=SCENES.map(function(s,i){
+      var right=(picked[i]===s.ok);
+      return '<div class="bd-item '+(right?'good':'bad')+'">'+
+        '<div class="mark">'+(right?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M5 13l5 5 9-11"/></svg>':'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 6l12 12M18 6L6 18"/></svg>')+'</div>'+
+        '<div class="t">'+s.t+'<small>'+s.meta+'</small></div>'+
+      '</div>';
+    }).join('');
+    $('result').innerHTML=
+      '<div class="topbar">'+
+        '<button class="back" data-go="intro" aria-label="返回"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button>'+
+        '<div class="brand">网络文明健康指数</div>'+
+      '</div>'+
+      '<div class="result-hero">'+
+        '<div class="badge-ring"><div class="r-glow"></div>'+ring+
+          '<div class="center"><span class="n">'+pct+'</span><span class="lbl">网络口腔健康指数</span></div></div>'+
+        '<div class="badge-name">'+badge.name+'</div>'+
+        '<p class="badge-sub">答对 '+score+' / '+SCENES.length+' 题 · '+badge.score+'</p>'+
+      '</div>'+
+      '<div class="badge-desc">'+badge.desc+'</div>'+
+      '<div class="breakdown">'+
+        '<div class="bd-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 6h11M9 12h11M9 18h7M4 6h.01M4 12h.01M4 18h.01"/></svg>逐题回顾</div>'+
+        breakdown+
+      '</div>'+
+      '<div class="flex-grow"></div>'+
+      '<button class="primary-btn" data-go="pledge" id="toPledge">签署文明上网宣言'+
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>'+
+      '<button class="ghost-btn" data-go="cover" id="retryBtn">'+
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4v6h6M20 20v-6h-6M20 9A8 8 0 0 0 5.6 5.6L4 8M4 15a8 8 0 0 0 14.4 3.4L20 16"/></svg>重新体检</button>'+
+      '<div class="view-foot">口腔医学院网络文化作品征集大赛</div>';
+    // 重绑
+    document.querySelectorAll('#result [data-go]').forEach(function(b){b.addEventListener('click',function(){go(this.getAttribute('data-go'));});});
+    $('retryBtn').addEventListener('click',function(){resetQuiz();});
+  }
+
+  function resetQuiz(){ startQuiz(); }
+
+  // ===== 宣言卡 =====
+  function todayStr(){
+    var d=new Date();return (d.getFullYear())+'-'+String(d.getMonth()+1).padStart(2,'0');
+  }
+  $('cardDate').textContent=todayStr();
+  $('makeCard').addEventListener('click',function(){
+    var v=$('pledgeName').value.trim();
+    $('cardName').textContent=(v?v:'网络文明践行者');
+    go('card');
+  });
+
+  // ===== 复制文案 =====
+  $('copyBtn').addEventListener('click',function(){
+    var name=$('cardName').textContent;
+    var txt='文明上网，从“齿”开始｜网络文明健康体检\n\n“我承诺：不传谣、不网暴、不晒他人隐私；理性表达、核实转发、主动举报。像爱护牙齿一样，每天清洁自己的网络言行，守护清朗网络空间。”\n—— '+name+' · 口腔医学院';
+    function ok(){toast('宣言文案已复制');}
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(txt).then(ok,function(){fallbackCopy(txt);});
+    } else { fallbackCopy(txt); }
+    function fallbackCopy(t){
+      var ta=document.createElement('textarea');ta.value=t;ta.style.position='fixed';ta.style.opacity='0';
+      document.body.appendChild(ta);ta.select();
+      try{document.execCommand('copy');ok();}catch(e){toast('复制失败，请长按手动复制');}
+      document.body.removeChild(ta);
+    }
+  });
+
+  var toastTimer;
+  function toast(msg){
+    var el=$('toast');el.textContent=msg;el.classList.add('show');
+    clearTimeout(toastTimer);toastTimer=setTimeout(function(){el.classList.remove('show');},1800);
+  }
+
+  // ===== 下载宣言卡为图片（原生 canvas 绘制，无外部依赖） =====
+  var LIKE_URL="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/FFwnbxaOyo3GSuxTMqOcp853nSe";
+  var LOGO_URL="https://media.doubao.com/space/api/box/stream/download/all_by_mount_point/O6AubYbCsoerNqxuVKzcVROTnrd";
+  var badgeImg=null, logoImg=null;
+  function loadImg(src){
+    return new Promise(function(res,rej){
+      var im=new Image();im.crossOrigin="anonymous";
+      im.onload=function(){res(im);};im.onerror=function(){rej();};im.src=src;
+    });
+  }
+  function wrapText(ctx,text,maxWidth){
+    var lines=[],cur="";
+    for(var i=0;i<text.length;i++){
+      var ch=text.charAt(i);
+      if(ctx.measureText(cur+ch).width>maxWidth&&cur){lines.push(cur);cur=ch;}
+      else{cur+=ch;}
+    }
+    if(cur)lines.push(cur);
+    return lines;
+  }
+  function drawCard(name,date){
+    var QUOTE='“我承诺：不传谣、不网暴、不晒他人隐私；理性表达、核实转发、主动举报。像爱护牙齿一样，每天清洁自己的网络言行，守护清朗网络空间。”';
+    var W=750, TOP=258, padX=58;
+    var tctx=document.createElement('canvas').getContext('2d');
+    tctx.font='600 30px "PingFang SC","Microsoft YaHei",sans-serif';
+    var lines=wrapText(tctx,QUOTE,W-2*padX);
+    var H=TOP+ (lines.length*47) + 52 + 74;
+    var c=document.createElement('canvas');c.width=W;c.height=H;
+    var ctx=c.getContext('2d');
+    ctx.beginPath();
+    var r=30;
+    ctx.moveTo(r,0);ctx.lineTo(W-r,0);ctx.quadraticCurveTo(W,0,W,r);
+    ctx.lineTo(W,H-r);ctx.quadraticCurveTo(W,H,W-r,H);
+    ctx.lineTo(r,H);ctx.quadraticCurveTo(0,H,0,H-r);ctx.lineTo(0,r);ctx.quadraticCurveTo(0,0,r,0);
+    ctx.closePath();ctx.clip();
+    // 顶部深蓝渐变
+    var g=ctx.createLinearGradient(0,0,0,TOP);
+    g.addColorStop(0,'#123A5C');g.addColorStop(1,'#1C4E78');
+    ctx.fillStyle=g;ctx.fillRect(0,0,W,TOP);
+    // 红小牙徽章（圆形）
+    ctx.save();ctx.beginPath();ctx.arc(W/2,92,52,0,Math.PI*2);ctx.closePath();ctx.clip();
+    ctx.fillStyle='#ffffff';ctx.fillRect(W/2-52,40,104,104);
+    if(badgeImg){var bs=88;ctx.drawImage(badgeImg,W/2-bs/2,92-bs/2,bs,bs);}
+    else{ctx.fillStyle='#2FA8A0';ctx.font='bold 30px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('清朗卫士',W/2,92);}
+    ctx.restore();
+    ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    ctx.fillStyle='#ffffff';ctx.font='900 40px "Noto Serif SC","PingFang SC",serif';
+    ctx.fillText('网络文明 · 清朗卫士',W/2,200);
+    ctx.fillStyle='#cfe6f4';ctx.font='500 21px "PingFang SC",sans-serif';
+    ctx.fillText('文明上网 从“齿”开始',W/2,236);
+    // 正文宣言
+    ctx.fillStyle='#234054';ctx.font='600 30px "PingFang SC","Microsoft YaHei",sans-serif';ctx.textAlign='left';
+    var y=TOP+48;
+    lines.forEach(function(ln){ctx.fillText(ln,padX,y);y+=47;});
+    ctx.textAlign='right';ctx.fillStyle='#123A5C';ctx.font='700 25px "PingFang SC",sans-serif';
+    ctx.fillText('—— '+name,W-padX,y+8);
+    y+=52;
+    // 分隔线
+    ctx.strokeStyle='#E3EFEB';ctx.lineWidth=2;ctx.setLineDash([6,6]);
+    ctx.beginPath();ctx.moveTo(padX,y);ctx.lineTo(W-padX,y);ctx.stroke();ctx.setLineDash([]);
+    y+=30;
+    var ls=34, ly=y;
+    if(logoImg){ctx.save();ctx.beginPath();ctx.arc(padX+ls/2,ly-ls/2,ls/2,0,Math.PI*2);ctx.clip();ctx.drawImage(logoImg,padX,ly-ls,ls,ls);ctx.restore();}
+    ctx.fillStyle='#6B7C8A';ctx.font='600 21px "PingFang SC",sans-serif';ctx.textAlign='left';
+    ctx.fillText('南昌医学院',padX+ls+12,ly);
+    ctx.textAlign='right';ctx.fillText(date,W-padX,ly);
+    return c;
+  }
+  function doDownload(name,date){
+    var c=drawCard(name,date);
+    var imgURL=c.toDataURL('image/png');
+    // 1) 尽力触发浏览器原生下载（部分手机内嵌浏览器会静默忽略，见第2步兜底）
+    try{
+      var a=document.createElement('a');
+      a.href=imgURL;
+      a.download='网络文明宣言卡.png';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+    }catch(e){}
+    // 2) 无论原生下载是否生效，都弹出大图预览，保证手机可“长按保存到相册”
+    showSaveOverlay(imgURL);
+  }
+  function showSaveOverlay(url){
+    var img=$('ovImg'); img.src=url;
+    $('saveOverlay').classList.remove('hidden');
+    toast('图片已生成，长按大图即可保存到相册');
+  }
+  $('ovClose').addEventListener('click',function(){ $('saveOverlay').classList.add('hidden'); });
+  $('ovDownload').addEventListener('click',function(){
+    try{
+      var a=document.createElement('a'); a.href=$('ovImg').src; a.download='网络文明宣言卡.png';
+      document.body.appendChild(a);a.click();document.body.removeChild(a);
+    }catch(e){}
+    toast('已尝试下载，也可以长按上方图片保存到相册');
+  });
+  $('downloadBtn').addEventListener('click',function(){
+    toast('正在生成图片…');
+    var name=$('cardName').textContent;
+    var date=$('cardDate').textContent;
+    Promise.all([loadImg(LIKE_URL),loadImg(LOGO_URL)]).then(function(imgs){
+      badgeImg=imgs[0];logoImg=imgs[1];doDownload(name,date);
+    }).catch(function(){
+      badgeImg=null;logoImg=null;doDownload(name,date);
+    });
+  });
+
+  // 初始化：体检视图由 startQuiz 渲染，无需预渲染空题库
+})();
+</script>
+</body>
+</html>
